@@ -33,3 +33,5 @@ __docs
 
 # ipfs
 services/ipfs/*
+*.deb
+services/eosio/config/protocol_features/

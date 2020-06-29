@@ -1,11 +1,17 @@
-FROM eosio/eos-dev:v1.5.2
+FROM ubuntu:18.04
 
-RUN apt-get update && apt-get install jq curl git  -y
+RUN apt-get update && apt-get install wget jq curl git  -y
 
 COPY ./ /opt/application
 
 # Install EOS Contract Development Toolkit
-RUN apt install /opt/application/utils/eosio.cdt_1.5.0-1_amd64.deb
+RUN wget -O eosio.deb https://github.com/EOSIO/eos/releases/download/v2.0.6/eosio_2.0.6-1-ubuntu-18.04_amd64.deb; \
+    apt install -y ./eosio.deb; \
+    rm ./eosio.deb
+
+RUN wget -O eosio.cdt.deb https://github.com/EOSIO/eosio.cdt/releases/download/v1.7.0/eosio.cdt_1.7.0-1-ubuntu-18.04_amd64.deb; \
+    apt install -y ./eosio.cdt.deb; \
+    rm ./eosio.cdt.deb
 
 VOLUME /opt/application
 WORKDIR /opt/application
@@ -17,6 +23,3 @@ RUN chmod +x /wait
 # used by start.sh
 ENV DATA_DIR /root/data-dir
 ENV CONFIG_DIR /opt/application/config
-
-## Launch the wait tool and then start nodeos ( see docker compose, we are waiting for mongo)
-CMD /wait && /opt/application/scripts/start.sh

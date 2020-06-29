@@ -7,7 +7,6 @@ services:
     build:
       context: ./services/eosio
       dockerfile: Dockerfile
-    image: eoslocal/eosio
     stop_grace_period: 3m0s
     ports:
       - '8888:8888'
@@ -21,6 +20,7 @@ services:
       - eosio-data-volume:/root/data-dir
       - ./services/eosio:/opt/application
       - ./contracts:/opt/contracts
+    command: /opt/application/scripts/start.sh
     depends_on:
       - mongo
       - wallet
@@ -31,8 +31,10 @@ services:
 
   wallet:
     container_name: eoslocal_wallet
-    image: eosio/eos:v1.5.2
-    command: /opt/eosio/bin/keosd --wallet-dir /opt/eosio/bin/data-dir --http-server-address=0.0.0.0:8901 --http-alias=wallet.eoslocal:8901 --http-validate-host 0 --verbose-http-errors
+    build:
+      context: ./services/eosio
+      dockerfile: Dockerfile
+    command: keosd --wallet-dir /opt/eosio/bin/data-dir --http-server-address=0.0.0.0:8901 --http-alias=wallet.eoslocal:8901 --http-validate-host 0 --verbose-http-errors
     hostname: wallet
     expose:
       - 8901
